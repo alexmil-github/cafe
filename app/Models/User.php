@@ -50,34 +50,6 @@ class User extends Authenticatable
         return $this->belongsTo(Role::class);
     }
 
-    public function hasRole($roles)
-    {
-        return collect($roles)->contains($this->role->code);
-    }
 
-    public function shiftWorkers()
-    {
-        return $this->hasMany(ShiftWorker::class);
-    }
-
-    public function getShiftWorker($work_shift_id)
-    {
-        return $this->shiftWorkers()->where(['work_shift_id' => $work_shift_id])->first();
-    }
-
-    public function generateToken()
-    {
-        $this->update([
-            'api_token' => Hash::make(Str::random())
-        ]);
-        return $this->api_token;
-    }
-
-    public function logout()
-    {
-        $this->update([
-            'api_token' => null
-        ]);
-    }
 
 }
