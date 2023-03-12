@@ -31,4 +31,8 @@ Route::get('/unauth', function ()
 //Вывод всех пользователей
 Route::get('/user', [\App\Http\Controllers\UserController::class, 'index'])->middleware(['auth:api', 'admin']);
 //Добавление новой карточки
-Route::post('/user', [\App\Http\Controllers\UserController::class, 'store'])->middleware('auth:api');
+Route::post('/user', [\App\Http\Controllers\UserController::class, 'store'])->middleware(['auth:api', 'admin']);
+//Создание смены
+Route::post('/work-shift', [\App\Http\Controllers\WorkShiftController::class, 'store'])->middleware(['auth:api', 'admin']);
+//Открытие смены
+
