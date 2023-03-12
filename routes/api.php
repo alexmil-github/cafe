@@ -17,6 +17,18 @@ use Illuminate\Support\Facades\Route;
 Route::post('/login', [\App\Http\Controllers\UserController::class, 'login'])->withoutMiddleware(['auth:api']);
 Route::get('/logout', [\App\Http\Controllers\UserController::class, 'logout'])->middleware('auth:api');
 
+Route::get('/unauth', function ()
+{
+    return response()->json([
+       'error' => [
+           'code' => 403,
+           'message' => 'Login failed'
+       ]
+    ], 403);
+})->name('login');
+
 //Администратор
 //Вывод всех пользователей
-Route::get('/user', [\App\Http\Controllers\UserController::class, 'index'])->middleware('auth:api');
+Route::get('/user', [\App\Http\Controllers\UserController::class, 'index'])->middleware(['auth:api', 'admin']);
+//Добавление новой карточки
+Route::post('/user', [\App\Http\Controllers\UserController::class, 'store'])->middleware('auth:api');
