@@ -35,4 +35,6 @@ Route::post('/user', [\App\Http\Controllers\UserController::class, 'store'])->mi
 //Создание смены
 Route::post('/work-shift', [\App\Http\Controllers\WorkShiftController::class, 'store'])->middleware(['auth:api', 'admin']);
 //Открытие смены
-
+Route::get('/work-shift/{id}/open', [\App\Http\Controllers\WorkShiftController::class, 'open'])->middleware(['auth:api', 'admin']);
+//Закрытие смены
+Route::get('/work-shift/{id}/close', [\App\Http\Controllers\WorkShiftController::class, 'close'])->middleware(['auth:api', 'admin']);
