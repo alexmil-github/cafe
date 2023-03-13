@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ShiftWorker;
+use App\Models\User;
 use App\Models\WorkShift;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class WorkShiftController extends Controller
 {
@@ -14,10 +17,6 @@ class WorkShiftController extends Controller
             'start' => 'required|date_format:Y-m-d H:i|after_or_equal:now',
             'end' => 'required|date_format:Y-m-d H:i|after:start',
         ]);
-//        $validator = $request->validate([
-//            'start' => 'required|date_format:Y-m-d H:i|after_or_equal:now',
-//            'end' => 'required|date_format:Y-m-d H:i|after:start',
-//        ]);
 
         if($validator->fails())
             return response()->json([
@@ -86,8 +85,35 @@ class WorkShiftController extends Controller
         ];
     }
 
-    public function addUser($id)
+    public function addUser(Request $request, $id)
     {
+        $working = User::where(['status' => 'working'])->pluck('id');
 
+        $validator = Validator::make($request->all(), [
+            'user_id' => ['required', 'exists:users,id', Rule::in($working)],
+        ]);
+
+        if($validator->fails())
+            return response()->json([
+                'error' => [
+                    'code' => 422,
+                    'message' => 'Validation error',
+                    'errors' => $validator->errors()
+                ]
+            ],422);
+
+        $workshift = WorkShift::find($id);
+
+        ShiftWorker::create([
+            'work_shift_id' => $workshift->id,
+            'user_id' => $request->user_id
+        ]);
+
+        return response()->json([
+            'data' => [
+                'id_user' => $request->user_id,
+                'status' => 'added'
+            ]
+        ])->setStatusCode(201);
     }
 }
