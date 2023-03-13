@@ -85,4 +85,9 @@ class WorkShiftController extends Controller
             ]
         ];
     }
+
+    public function addUser($id)
+    {
+
+    }
 }

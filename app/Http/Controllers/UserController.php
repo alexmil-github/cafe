@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use PhpParser\Node\Stmt\Return_;
 
@@ -16,8 +17,8 @@ class UserController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-           'login'=> 'required',
-           'password' =>'required'
+            'login' => 'required',
+            'password' => 'required'
         ]);
 
         $user = User::where([
@@ -86,6 +87,26 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string',
+            'surname' => 'string',
+            'patronymic' => 'string',
+            'login' => 'required|string|unique:users',
+            'password' => 'required|string',
+            'photo_file' => 'image|mimes:jpg,jpeg,png',
+            'role_id' => 'required|integer|exists:users,id',
+        ]);
+
+        if ($validator->fails())
+            return response()->json([
+                'error' => [
+                    'code' => 422,
+                    'message' => 'Validation error',
+                    'errors' => $validator->errors()
+                ]
+            ], 422);
+
         $user = User::create([
                 'photo_file' => $request->photo_file ? $request->photo_file->store('public/photos') : null,
             ] + $request->all()
